@@ -1,0 +1,2 @@
+# gnina
+GNINA para todos
