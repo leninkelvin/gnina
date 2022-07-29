@@ -8,7 +8,7 @@ Las referencias a los artículos de gnina estan al final.
 
 ### Instalación
 **Se requiere un GPU de NVIDIA**
-**Aunque gnina puede correr en CPU, los verdaderos beneficios solo se apreciaran con GPUs. Y, se requieren 4 GBs de RAM en el GPU**
+**Aunque gnina puede correr en CPU, los verdaderos beneficios solo se apreciaran con GPUs. Y, se requieren al menos 4 GBs de RAM en el GPU. Hay opciones avanzadas que no son accesibles a menos de 15 GBs de RAM en el GPU**
 
 Los autores originales recomiendan que se gnina se compiles desde el código fuente. Para esta guía usaré [docker](https://docs.docker.com/get-started/), específicamente el [docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) de NVIDIA. Para más información, visiten [gnina](https://github.com/gnina/gnina).
 
