@@ -8,7 +8,7 @@ Las referencias a los artículos de gnina estan al final.
 
 ### Instalación
 **Se requiere un GPU de NVIDIA**
-**Aunque gnina puede correr en CPU, los verdaderos beneficios solo se apreciaran con GPUs.**
+**Aunque gnina puede correr en CPU, los verdaderos beneficios solo se apreciaran con GPUs. Y, se requieren 4 GBs de RAM en el GPU**
 
 Los autores originales recomiendan que se gnina se compiles desde el código fuente. Para esta guía usaré [docker](https://docs.docker.com/get-started/), específicamente el [docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html) de NVIDIA. Para más información, visiten [gnina](https://github.com/gnina/gnina).
 
@@ -80,7 +80,7 @@ Instalen la imagen de docker
 ```
 docker pull gnina/gnina
 ```
-Para ejecutar docker y la imagen de gnina
+Con este repositorio se incluyen dos archivos dentro de un folder llamado files: rec.pdb y lig.pdb. Bajenlos, entren a ese folder en la terminal y ejecuten el comando 
 ```
 nvidia-docker run -it -v $(pwd)/:$(pwd)/ docker.io/gnina/gnina
 ```
@@ -91,218 +91,21 @@ cmake-3.18.6-Linux-x86_64  cmake-3.18.6-Linux-x86_64.tar.gz  gnina  openbabel
 ```
 pero te dejara acceder al folder donde ejecutaste el comando. Si lo ejecutas en /home/usuario/Documents (donde usuario se cambia por tu nombre de usuario) tendras acceso a ese folder. Ejecuta 
 ```
-cd /home/admin/Documents/
+cd /home/admin/Documents/files/
 ```
 **No olvides cambiar admin por tu nombre de usuario**
 
-
-
-
-Usage
-=====
-
-To dock ligand `lig.sdf` to a binding site on `rec.pdb` defined by another ligand `orig.sdf`:
+Para ejecutar el docking
 ```
-gnina -r rec.pdb -l lig.sdf --autobox_ligand orig.sdf -o docked.sdf.gz
+gnina -r rec.pdb -l lig.pdb --autobox_ligand lig.pdb -o docked.sdf --seed 0
 ```
-
-To perform docking with flexible sidechain residues within 3.5 Angstroms of `orig.sdf` (generally not recommend unless prior knowledge indicates pocket is highly flexible):
+Los resultados apareceran en segundos. Con el comando
 ```
-gnina -r rec.pdb -l lig.sdf --autobox_ligand orig.sdf --flexdist_ligand orig.sdf --flexdist 3.5 -o flex_docked.sdf.gz
+obrms -firstonly lig.pdb  docked.sdf
 ```
+podrán extraer los resultados y visualizarlos a su gusto. 
 
-To perform whole protein docking:
-```
-gnina -r rec.pdb -l lig.sdf --autobox_ligand rec.pdb -o whole_docked.sdf.gz --exhaustiveness 64
-```
-
-To utilize the default ensemble CNN in the energy minimization during the refinement step of docking (10 times slower than the default rescore option):
-```
-gnina -r rec.pdb -l lig.sdf --autobox_ligand orig.sdf --cnn_scoring refinement -o cnn_refined.sdf.gz
-```
-
-To utilize the default ensemble CNN for every step of docking (1000 times slower than the default rescore option):
-```
-gnina -r rec.pdb -l lig.sdf --autobox_ligand orig.sdf --cnn_scoring all -o cnn_all.sdf.gz
-```
-
-To utilize all empirical scoring using the [Vinardo](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0155183) scoring function:
-```
-gnina -r rec.pdb -l lig.sdf --autobox_ligand orig.sdf --scoring vinardo --cnn_scoring none -o vinardo_docked.sdf.gz
-```
-
-To utilize a different CNN during docking (see help for possible options):
-```
-
-gnina -r rec.pdb -l lig.sdf --autobox_ligand orig.sdf --cnn dense -o dense_docked.sdf.gz
-```
-
-To minimize and score ligands `ligs.sdf` already positioned in a binding site:
-```
-gnina -r rec.pdb -l ligs.sdf --minimize -o minimized.sdf.gz
-```
-
-All options:
-```
-Input:
-  -r [ --receptor ] arg            rigid part of the receptor
-  --flex arg                       flexible side chains, if any (PDBQT)
-  -l [ --ligand ] arg              ligand(s)
-  --flexres arg                    flexible side chains specified by comma 
-                                   separated list of chain:resid
-  --flexdist_ligand arg            Ligand to use for flexdist
-  --flexdist arg                   set all side chains within specified 
-                                   distance to flexdist_ligand to flexible
-  --flex_limit arg                 Hard limit for the number of flexible 
-                                   residues
-  --flex_max arg                   Retain at at most the closest flex_max 
-                                   flexible residues
-
-Search space (required):
-  --center_x arg                   X coordinate of the center
-  --center_y arg                   Y coordinate of the center
-  --center_z arg                   Z coordinate of the center
-  --size_x arg                     size in the X dimension (Angstroms)
-  --size_y arg                     size in the Y dimension (Angstroms)
-  --size_z arg                     size in the Z dimension (Angstroms)
-  --autobox_ligand arg             Ligand to use for autobox
-  --autobox_add arg                Amount of buffer space to add to 
-                                   auto-generated box (default +4 on all six 
-                                   sides)
-  --autobox_extend arg (=1)        Expand the autobox if needed to ensure the 
-                                   input conformation of the ligand being 
-                                   docked can freely rotate within the box.
-  --no_lig                         no ligand; for sampling/minimizing flexible 
-                                   residues
-
-Scoring and minimization options:
-  --scoring arg                    specify alternative built-in scoring 
-                                   function
-  --custom_scoring arg             custom scoring function file
-  --custom_atoms arg               custom atom type parameters file
-  --score_only                     score provided ligand pose
-  --local_only                     local search only using autobox (you 
-                                   probably want to use --minimize)
-  --minimize                       energy minimization
-  --randomize_only                 generate random poses, attempting to avoid 
-                                   clashes
-  --num_mc_steps arg               number of monte carlo steps to take in each 
-                                   chain
-  --num_mc_saved arg               number of top poses saved in each monte 
-                                   carlo chain
-  --minimize_iters arg (=0)        number iterations of steepest descent; 
-                                   default scales with rotors and usually isn't
-                                   sufficient for convergence
-  --accurate_line                  use accurate line search
-  --simple_ascent                  use simple gradient ascent
-  --minimize_early_term            Stop minimization before convergence 
-                                   conditions are fully met.
-  --minimize_single_full           During docking perform a single full 
-                                   minimization instead of a truncated 
-                                   pre-evaluate followed by a full.
-  --approximation arg              approximation (linear, spline, or exact) to 
-                                   use
-  --factor arg                     approximation factor: higher results in a 
-                                   finer-grained approximation
-  --force_cap arg                  max allowed force; lower values more gently 
-                                   minimize clashing structures
-  --user_grid arg                  Autodock map file for user grid data based 
-                                   calculations
-  --user_grid_lambda arg (=-1)     Scales user_grid and functional scoring
-  --print_terms                    Print all available terms with default 
-                                   parameterizations
-  --print_atom_types               Print all available atom types
-
-Convolutional neural net (CNN) scoring:
-  --cnn_scoring arg (=1)           Amount of CNN scoring: none, rescore 
-                                   (default), refinement, all
-  --cnn arg                        built-in model to use, specify 
-                                   PREFIX_ensemble to evaluate an ensemble of 
-                                   models starting with PREFIX: 
-                                   crossdock_default2018 crossdock_default2018_
-                                   1 crossdock_default2018_2 
-                                   crossdock_default2018_3 
-                                   crossdock_default2018_4 default2017 dense 
-                                   dense_1 dense_2 dense_3 dense_4 
-                                   general_default2018 general_default2018_1 
-                                   general_default2018_2 general_default2018_3 
-                                   general_default2018_4 redock_default2018 
-                                   redock_default2018_1 redock_default2018_2 
-                                   redock_default2018_3 redock_default2018_4
-  --cnn_model arg                  caffe cnn model file; if not specified a 
-                                   default model will be used
-  --cnn_weights arg                caffe cnn weights file (*.caffemodel); if 
-                                   not specified default weights (trained on 
-                                   the default model) will be used
-  --cnn_resolution arg (=0.5)      resolution of grids, don't change unless you
-                                   really know what you are doing
-  --cnn_rotation arg (=0)          evaluate multiple rotations of pose (max 24)
-  --cnn_update_min_frame           During minimization, recenter coordinate 
-                                   frame as ligand moves
-  --cnn_freeze_receptor            Don't move the receptor with respect to a 
-                                   fixed coordinate system
-  --cnn_mix_emp_force              Merge CNN and empirical minus forces
-  --cnn_mix_emp_energy             Merge CNN and empirical energy
-  --cnn_empirical_weight arg (=1)  Weight for scaling and merging empirical 
-                                   force and energy 
-  --cnn_outputdx                   Dump .dx files of atom grid gradient.
-  --cnn_outputxyz                  Dump .xyz files of atom gradient.
-  --cnn_xyzprefix arg (=gradient)  Prefix for atom gradient .xyz files
-  --cnn_center_x arg               X coordinate of the CNN center
-  --cnn_center_y arg               Y coordinate of the CNN center
-  --cnn_center_z arg               Z coordinate of the CNN center
-  --cnn_verbose                    Enable verbose output for CNN debugging
-
-Output:
-  -o [ --out ] arg                 output file name, format taken from file 
-                                   extension
-  --out_flex arg                   output file for flexible receptor residues
-  --log arg                        optionally, write log file
-  --atom_terms arg                 optionally write per-atom interaction term 
-                                   values
-  --atom_term_data                 embedded per-atom interaction terms in 
-                                   output sd data
-  --pose_sort_order arg (=0)       How to sort docking results: CNNscore 
-                                   (default), CNNaffinity, Energy
-
-Misc (optional):
-  --cpu arg                        the number of CPUs to use (the default is to
-                                   try to detect the number of CPUs or, failing
-                                   that, use 1)
-  --seed arg                       explicit random seed
-  --exhaustiveness arg (=8)        exhaustiveness of the global search (roughly
-                                   proportional to time)
-  --num_modes arg (=9)             maximum number of binding modes to generate
-  --min_rmsd_filter arg (=1)       rmsd value used to filter final poses to 
-                                   remove redundancy
-  -q [ --quiet ]                   Suppress output messages
-  --addH arg                       automatically add hydrogens in ligands (on 
-                                   by default)
-  --stripH arg                     remove hydrogens from molecule _after_ 
-                                   performing atom typing for efficiency (on by
-                                   default)
-  --device arg (=0)                GPU device to use
-  --no_gpu                         Disable GPU acceleration, even if available.
-
-Configuration file (optional):
-  --config arg                     the above options can be put here
-
-Information (optional):
-  --help                           display usage summary
-  --help_hidden                    display usage summary with hidden options
-  --version                        display program version
-```
-
-CNN Scoring
-===========
-
-`--cnn_scoring` determines at what points of the docking procedure that the CNN scoring function is used.
- * `none` - No CNNs used for docking. Uses the specified empirical scoring function throughout.
- * `rescore` (default) - CNN used for reranking of final poses. Least computationally expensive CNN option.
- * `refinement` - CNN used to refine poses after Monte Carlo chains and for final ranking of output poses. 10x slower than `rescore` when using a GPU.
- * `all` - CNN used as the scoring function throughout the whole procedure. Extremely computationally intensive and not recommended.
-
-The default CNN scoring function is an ensemble of 5 models selected to balance pose prediction performance and runtime: dense, general_default2018_3, dense_3, crossdock_default2018, and redock_default2018.  More information on these various models can be found in the papers listed above.
+**Listo, si llegaron hasta aquí ya empezaron a dominar este proceso. Consulten la página original y extiendan sus habilidades.**
 
 Citation
 ========
