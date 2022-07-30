@@ -19,7 +19,9 @@ Asegurense de tener estas librerias al día.
 apt-get install build-essential cmake git wget libboost-all-dev libeigen3-dev libgoogle-glog-dev libprotobuf-dev protobuf-compiler libhdf5-dev libatlas-base-dev python3-dev librdkit-dev python3-numpy python3-pip python3-pytest
 ```
 
-[Sigan las instrucciones de NVIDIA para instalar CUDA](http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#axzz4TWipdwX1) se requiere la versión >= 10.0. **Asegurense que `nvcc` este en el PATH.**
+[Sigan las instrucciones de NVIDIA para instalar CUDA](http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#axzz4TWipdwX1) se requiere la versión >= 10.0. 
+Aca hay un video en [mi canal de youtube](https://youtu.be/Ip3M3Moc_-8) hay un video de como instalar los drivers de NVIDIA y CUDA.
+**Asegurense que `nvcc` este en el PATH.**
 
 Docker
 ======
