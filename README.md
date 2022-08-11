@@ -23,6 +23,10 @@ apt-get install build-essential cmake git wget libboost-all-dev libeigen3-dev li
 Aca hay un video en [mi canal de youtube](https://youtu.be/Ip3M3Moc_-8) hay un video de como instalar los drivers de NVIDIA y CUDA.
 **Asegurense que `nvcc` este en el PATH.**
 
+### Windows 11
+
+Instale el subsistema de Ubuntu mediante la tiena de Microsoft y sigan las intrucciones de arriba para Ubuntu.
+
 Docker
 ======
 
@@ -103,7 +107,7 @@ gnina -r rec.pdb -l lig.pdb --autobox_ligand lig.pdb -o docked.sdf --seed 0
 ```
 Los resultados apareceran en segundos. Con el comando
 ```
-obrms -firstonly lig.pdb  docked.sdf
+obrms --firstonly lig.pdb  docked.sdf
 ```
 podrán extraer los resultados y visualizarlos a su gusto. 
 
