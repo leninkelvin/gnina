@@ -1,3 +1,7 @@
+![GitHub all releases](https://img.shields.io/github/downloads/leninkelvin/gnina/total?style=for-the-badge&logo=appveyor)
+![GitHub forks](https://img.shields.io/github/forks/leninkelvin/gnina?style=for-the-badge&logo=appveyor)
+![GitHub Repo stars](https://img.shields.io/github/stars/leninkelvin/gnina?style=for-the-badge&logo=appveyor)
+
 # gnina
 ### GNINA para todos
 **Nota: parte de este material se ha traducido y adaptado del repositorio [original](https://github.com/gnina/gnina)**
